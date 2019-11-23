@@ -21,7 +21,7 @@
             <template v-slot:activator>
               <v-list-item>
                 <v-list-item-content>
-                  <v-list-item-title @click.stop="menuclick(item.text)">{{ item.text }}</v-list-item-title>
+                  <v-list-item-title @click="menuclick(item.text)">{{ item.text }}</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
             </template>
@@ -30,7 +30,7 @@
                 <v-icon>{{ child.icon }}</v-icon>
               </v-list-item-action>
               <v-list-item-content>
-                <v-list-item-title @click.stop="menuclick(item.text)">{{ child.text }}</v-list-item-title>
+                <v-list-item-title @click="menuclick(item.text)">{{ child.text }}</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
           </v-list-group>
@@ -39,7 +39,7 @@
               <v-icon>{{ item.icon }}</v-icon>
             </v-list-item-action>
             <v-list-item-content>
-              <v-list-item-title @click.stop="menuclick(item.text)">{{ item.text }}</v-list-item-title>
+              <v-list-item-title @click="menuclick(item.text)">{{ item.text }}</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </template>
@@ -47,7 +47,7 @@
     </v-navigation-drawer>
 
     <v-app-bar :clipped-left="$vuetify.breakpoint.lgAndUp" app color="blue darken-3" dark>
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
+      <v-app-bar-nav-icon @click="drawer = !drawer" />
       <v-toolbar-title style="width: 300px" class="ml-0 pl-4">
         <span class="hidden-sm-and-down">{{site.name}}</span>
       </v-toolbar-title>

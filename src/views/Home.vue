@@ -1,18 +1,21 @@
 <template>
   <div class="home">
     <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    {{$acl.get}}
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+// import HelloWorld from '@/components/HelloWorld.vue'
+import { AclRule } from 'vue-acl'
 
 export default {
   name: 'home',
-  components: {
-    HelloWorld
+  computed: {
+    isLocalRule () {
+      return new AclRule('create').generate()
+    }
   }
 }
 </script>
