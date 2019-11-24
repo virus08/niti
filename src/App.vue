@@ -44,6 +44,16 @@
           </v-list-item>
         </template>
       </v-list>
+      <v-list>
+        <v-list-item link>
+          <v-list-item-action>
+            <v-icon>mdi-logout-variant</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title @click="logout">Logout </v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
     </v-navigation-drawer>
 
     <v-app-bar :clipped-left="$vuetify.breakpoint.lgAndUp" app color="blue darken-3" dark>
@@ -53,7 +63,7 @@
       </v-toolbar-title>
       <v-spacer />
       <v-btn icon large>
-        <v-avatar size="32px" item>
+        <v-avatar size="32px" item @click="login">
           <v-img src="https://cdn.vuetifyjs.com/images/logos/logo.svg" alt="Vuetify" />
         </v-avatar>
       </v-btn>
@@ -61,7 +71,14 @@
     <v-content>
       <v-container class="fill-height" fluid>
         <v-layout child-flex>
-          <router-view></router-view>
+          <h1>{{ msg }}</h1>
+          <button @click="login" type="button" v-if="!user">Login with Microsoft</button>
+          <button @click="callAPI" type="button" v-if="user">Call Graph's /me API</button>
+          <button @click="logout" type="button" v-if="user">Logout</button>
+          <h3 v-if="user">Hello {{ user.name }}</h3>
+          <pre v-if="userInfo">{{ JSON.stringify(userInfo, null, 4) }}</pre>
+          <p v-if="loginFailed">Login unsuccessful</p>
+          <p v-if="apiCallFailed">Graph API call unsuccessful</p>
         </v-layout>
       </v-container>
     </v-content>
@@ -69,11 +86,19 @@
 </template>
 
 <script>
+import AuthService from "./services/auth.service";
+import GraphService from "./services/graph.service";
+
 export default {
   props: {
     source: String
   },
   data: () => ({
+    msg: "Welcome to Your Vue.js + MSAL.js App",
+    user: null,
+    userInfo: null,
+    apiCallFailed: false,
+    loginFailed: false,
     site: {},
     dialog: false,
     drawer: false,
@@ -108,7 +133,63 @@ export default {
       { icon: "mdi-keyboard", text: "Go to the old version" }
     ]
   }),
+  created() {
+    this.authService = new AuthService();
+    this.graphService = new GraphService();
+    this.authService.getToken().then(
+      token =>{
+        if(!token){
+          this.login();
+        }else{
+          this.callAPI();
+        }
+      }
+    )
+  },
   methods: {
+    callAPI() {
+      this.apiCallFailed = false;
+      this.authService.getToken().then(
+        token => {
+          this.graphService.getUserInfo(token).then(
+            data => {
+              this.userInfo = data;
+            },
+            error => {
+              // console.error(error);
+              this.apiCallFailed = true;
+              // this.login();
+            }
+          );
+        },
+        error => {
+          console.error(error);
+          this.apiCallFailed = true;
+          // this.login();
+        }
+      );
+    },
+    logout() {
+      this.authService.logout();
+    },
+    login() {
+      this.loginFailed = false;
+      this.authService.login().then(
+        user => {
+          if (user) {
+            this.user = user;
+            // alert(user);
+          } else {
+            this.login();
+            this.loginFailed = true;
+          }
+        },
+        error => {
+          // alert(error)
+          this.loginFailed = true;
+        }
+      );
+    },
     menuclick(txt) {
       alert(txt);
     }
